@@ -1,17 +1,14 @@
 package org.wens.toolkit.query;
 
-import com.sun.istack.internal.NotNull;
 
 /**
  * @author wens
  */
 public class PageQuery implements Query{
 
-    @NotNull
-    private Integer pageNo ;
+    private Integer pageNo = 1;
 
-    @NotNull
-    private Integer pageSize ;
+    private Integer pageSize = 20;
 
     private String sortField ;
 
