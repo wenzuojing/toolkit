@@ -45,4 +45,8 @@ public class PageQuery implements Query{
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
+
+    public Integer getOffset(){
+        return ( this.pageNo - 1 ) * pageSize ;
+    }
 }
