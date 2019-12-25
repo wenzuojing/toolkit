@@ -5,5 +5,5 @@ import java.io.Serializable;
 /**
  * @author wens
  */
-public class Query implements Serializable {
+public interface Query extends Serializable {
 }
