@@ -38,7 +38,7 @@ public class QueryHelper {
                     throw new RuntimeException("无法按"+query.getSortField()+"字段排序");
                 }
                 SqlColumn orderColumn  = (SqlColumn) getValue(sqlTable,orderField);
-                if("desc".equalsIgnoreCase(query.getSortField()) || "descend".equalsIgnoreCase(query.getSortField())){
+                if("desc".equalsIgnoreCase(query.getSortOrder()) || "descend".equalsIgnoreCase(query.getSortOrder())){
                     where.orderBy(orderColumn.descending());
                 }else {
                     where.orderBy(orderColumn);
