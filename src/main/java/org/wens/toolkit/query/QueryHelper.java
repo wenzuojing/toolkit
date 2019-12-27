@@ -30,12 +30,28 @@ public class QueryHelper {
         if(l != 0 ){
             QueryHelper.autoWhere(where,sqlTable,query);
             where.limit(query.getPageSize()).offset(query.getOffset());
+            if(query.getSortField() != null ){
+                Field orderField = null;
+                try {
+                    orderField = getField(sqlTable,query.getSortField());
+                } catch (NoSuchFieldException e) {
+                    throw new RuntimeException("无法按"+query.getSortField()+"字段排序");
+                }
+                SqlColumn orderColumn  = (SqlColumn) getValue(sqlTable,orderField);
+                if("desc".equalsIgnoreCase(query.getSortField()) || "descend".equalsIgnoreCase(query.getSortField())){
+                    where.orderBy(orderColumn.descending());
+                }else {
+                    where.orderBy(orderColumn);
+                }
+            }
             pageData.setData(where.build().execute());
         }else{
             pageData.setData(Collections.EMPTY_LIST);
         }
         return pageData;
     }
+
+
 
     public static <T> void autoWhere(QueryExpressionDSL<MyBatis3SelectModelAdapter<T>>.QueryExpressionWhereBuilder queryExpressionWhereBuilder , SqlTable sqlTable , Object query ){
 
@@ -151,6 +167,10 @@ public class QueryHelper {
         } catch (IllegalAccessException e) {
             return null;
         }
+    }
+
+    private static Field getField(Object object, String name) throws NoSuchFieldException {
+        return object.getClass().getField(name);
     }
 
 
