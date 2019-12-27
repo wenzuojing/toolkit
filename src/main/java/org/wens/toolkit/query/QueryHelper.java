@@ -12,13 +12,32 @@ import org.wens.toolkit.query.annotation.Condition;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author wens
  */
 public class QueryHelper {
 
-    public static <T> void autoSet(QueryExpressionDSL<MyBatis3SelectModelAdapter<T>>.QueryExpressionWhereBuilder queryExpressionWhereBuilder , SqlTable sqlTable , Object query ){
+
+    public static  <R>   PageData<List<R>> queryForPage(QueryExpressionDSL<MyBatis3SelectModelAdapter<List<R>>> select, QueryExpressionDSL<MyBatis3SelectModelAdapter<Long>> count, PageQuery query, SqlTable sqlTable) {
+        QueryExpressionDSL<MyBatis3SelectModelAdapter<List<R>>>.QueryExpressionWhereBuilder where = select.where();
+        QueryExpressionDSL<MyBatis3SelectModelAdapter<Long>>.QueryExpressionWhereBuilder countWhere = count.where();
+        QueryHelper.autoWhere(countWhere, sqlTable,query);
+        Long l = countWhere.build().execute();
+        PageData<List<R>> pageData = new PageData(query.getPageNo(),l);
+        if(l != 0 ){
+            QueryHelper.autoWhere(where,sqlTable,query);
+            where.limit(query.getPageSize()).offset(query.getOffset());
+            pageData.setData(where.build().execute());
+        }else{
+            pageData.setData(Collections.EMPTY_LIST);
+        }
+        return pageData;
+    }
+
+    public static <T> void autoWhere(QueryExpressionDSL<MyBatis3SelectModelAdapter<T>>.QueryExpressionWhereBuilder queryExpressionWhereBuilder , SqlTable sqlTable , Object query ){
 
         Field[] fields = query.getClass().getDeclaredFields();
 
