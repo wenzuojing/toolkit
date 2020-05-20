@@ -11,9 +11,7 @@ import org.wens.toolkit.query.annotation.Condition;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author wens
@@ -55,8 +53,7 @@ public class QueryHelper {
 
     public static <T> void autoWhere(QueryExpressionDSL<MyBatis3SelectModelAdapter<T>>.QueryExpressionWhereBuilder queryExpressionWhereBuilder , SqlTable sqlTable , Object query ){
 
-        Field[] fields = query.getClass().getDeclaredFields();
-
+        Field[] fields = getFields(query.getClass());
         for (Field field : fields) {
             Annotation[] annotations = field.getDeclaredAnnotations();
             for (Annotation annotation : annotations){
@@ -171,6 +168,19 @@ public class QueryHelper {
 
     private static Field getField(Object object, String name) throws NoSuchFieldException {
         return object.getClass().getField(name);
+    }
+
+    private static Field[] getFields(Class<?> aClass) {
+
+        List<Field> fields = new ArrayList<>(aClass.getDeclaredFields().length * 2);
+        while (true) {
+            fields.addAll(Arrays.asList(aClass.getDeclaredFields()));
+            aClass = aClass.getSuperclass();
+            if (aClass == null) {
+                break;
+            }
+        }
+        return fields.toArray(new Field[fields.size()]);
     }
 
 
