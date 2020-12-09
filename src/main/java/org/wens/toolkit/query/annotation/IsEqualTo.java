@@ -18,7 +18,4 @@ public @interface IsEqualTo {
 
     String value() default "";
 
-    int sqlColumn() ;
-
-
 }
