@@ -89,6 +89,9 @@ public class QueryHelper {
         if(value == null ){
             return;
         }
+        if(value instanceof String && "".endsWith((String) value)){
+            return ;
+        }
         org.mybatis.dynamic.sql.where.condition.IsLike<Object> condition = SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(value)));
         queryExpressionWhereBuilder.and(column,condition);
     }
@@ -141,6 +144,9 @@ public class QueryHelper {
         SqlColumn<Object> column = (SqlColumn<Object>) getSqlColumn(sqlTable,name);
         Object value = getValue(query, field);
         if(value == null ){
+            return ;
+        }
+        if(value instanceof String && "".endsWith((String) value)){
             return ;
         }
         org.mybatis.dynamic.sql.where.condition.IsEqualTo<Object> condition = SqlBuilder.isEqualTo(value);

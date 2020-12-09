@@ -1,6 +1,8 @@
 package org.wens.toolkit.query.annotation;
 
 
+import org.mybatis.dynamic.sql.SqlColumn;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,6 +17,8 @@ import java.lang.annotation.Target;
 public @interface IsEqualTo {
 
     String value() default "";
+
+    int sqlColumn() ;
 
 
 }
