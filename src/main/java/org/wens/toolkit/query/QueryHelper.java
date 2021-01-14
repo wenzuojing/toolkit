@@ -95,7 +95,7 @@ public class QueryHelper {
         }
         org.mybatis.dynamic.sql.where.condition.IsLike<Object> condition = SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(value)));
         String[] or = annotation.or();
-        if(or == null){
+        if(or == null || or.length == 0){
             queryExpressionWhereBuilder.and(column,condition);
         }else{
             SqlCriterion<Object>[] subCriteria = new SqlCriterion[or.length];
@@ -164,7 +164,7 @@ public class QueryHelper {
         }
         org.mybatis.dynamic.sql.where.condition.IsEqualTo<Object> condition = SqlBuilder.isEqualTo(value);
         String[] or = annotation.or();
-        if(or == null){
+        if(or == null || or.length == 0){
             queryExpressionWhereBuilder.and(column,condition);
         }else{
             SqlCriterion<Object>[] subCriteria = new SqlCriterion[or.length];

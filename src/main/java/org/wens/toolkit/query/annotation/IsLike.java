@@ -18,7 +18,7 @@ public @interface IsLike {
 
     String pattern() default "%${value}%" ;
 
-    String[] or();
+    String[] or() default {};
 
 
 }
