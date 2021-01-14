@@ -1,6 +1,7 @@
 package org.wens.toolkit.query;
 
 
+import org.mybatis.dynamic.sql.SqlCriterion;
 import org.wens.toolkit.query.annotation.*;
 import org.mybatis.dynamic.sql.SqlBuilder;
 import org.mybatis.dynamic.sql.SqlColumn;
@@ -93,7 +94,19 @@ public class QueryHelper {
             return ;
         }
         org.mybatis.dynamic.sql.where.condition.IsLike<Object> condition = SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(value)));
-        queryExpressionWhereBuilder.and(column,condition);
+        String[] or = annotation.or();
+        if(or == null){
+            queryExpressionWhereBuilder.and(column,condition);
+        }else{
+            SqlCriterion<Object>[] subCriteria = new SqlCriterion[or.length];
+            for (int i = 0; i < or.length; i++) {
+                SqlColumn<Object> _column = (SqlColumn<Object>) getSqlColumn(sqlTable,or[i]);
+                org.mybatis.dynamic.sql.where.condition.IsLike<Object> _condition = SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(value)));
+                subCriteria[i] = SqlBuilder.or(_column,_condition);
+            }
+            queryExpressionWhereBuilder.and(column,condition,subCriteria);
+        }
+
     }
 
     private static <T> void isBetween(QueryExpressionDSL<MyBatis3SelectModelAdapter<T>>.QueryExpressionWhereBuilder queryExpressionWhereBuilder, SqlTable sqlTable, Object query, Field field, IsBetween annotation) {
@@ -150,8 +163,18 @@ public class QueryHelper {
             return ;
         }
         org.mybatis.dynamic.sql.where.condition.IsEqualTo<Object> condition = SqlBuilder.isEqualTo(value);
-        queryExpressionWhereBuilder.and(column,condition);
-
+        String[] or = annotation.or();
+        if(or == null){
+            queryExpressionWhereBuilder.and(column,condition);
+        }else{
+            SqlCriterion<Object>[] subCriteria = new SqlCriterion[or.length];
+            for (int i = 0; i < or.length; i++) {
+                SqlColumn<Object> _column = (SqlColumn<Object>) getSqlColumn(sqlTable,or[i]);
+                org.mybatis.dynamic.sql.where.condition.IsEqualTo<Object> _condition = SqlBuilder.isEqualTo(value);
+                subCriteria[i] = SqlBuilder.or(_column,_condition);
+            }
+            queryExpressionWhereBuilder.and(column,condition,subCriteria);
+        }
     }
 
     private static SqlColumn<?> getSqlColumn(Object object, String fieldName) {

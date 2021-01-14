@@ -18,4 +18,6 @@ public @interface IsEqualTo {
 
     String value() default "";
 
+    String[] or() ;
+
 }
