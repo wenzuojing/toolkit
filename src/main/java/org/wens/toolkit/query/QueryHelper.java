@@ -93,19 +93,28 @@ public class QueryHelper {
         if(value instanceof String && "".endsWith((String) value)){
             return ;
         }
-        org.mybatis.dynamic.sql.where.condition.IsLike<Object> condition = SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(value)));
-        String[] or = annotation.or();
-        if(or == null || or.length == 0){
-            queryExpressionWhereBuilder.and(column,condition);
-        }else{
-            SqlCriterion<Object>[] subCriteria = new SqlCriterion[or.length];
-            for (int i = 0; i < or.length; i++) {
-                SqlColumn<Object> _column = (SqlColumn<Object>) getSqlColumn(sqlTable,or[i]);
-                org.mybatis.dynamic.sql.where.condition.IsLike<Object> _condition = SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(value)));
-                subCriteria[i] = SqlBuilder.or(_column,_condition);
+
+        if(value instanceof String){
+            org.mybatis.dynamic.sql.where.condition.IsLike<Object> condition = SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(value)));
+            String[] or = annotation.or();
+            if(or == null || or.length == 0){
+                queryExpressionWhereBuilder.and(column,condition);
+            }else{
+                SqlCriterion<Object>[] subCriteria = new SqlCriterion[or.length];
+                for (int i = 0; i < or.length; i++) {
+                    SqlColumn<Object> _column = (SqlColumn<Object>) getSqlColumn(sqlTable,or[i]);
+                    org.mybatis.dynamic.sql.where.condition.IsLike<Object> _condition = SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(value)));
+                    subCriteria[i] = SqlBuilder.or(_column,_condition);
+                }
+                queryExpressionWhereBuilder.and(column,condition,subCriteria);
             }
-            queryExpressionWhereBuilder.and(column,condition,subCriteria);
+        }else if(List.class.isAssignableFrom(value.getClass())){
+            for (Object v : ((List<?>) value)) {
+                queryExpressionWhereBuilder.and(column,SqlBuilder.isLike(annotation.pattern().replace("${value}",String.valueOf(v))));
+            }
         }
+
+
 
     }
 
